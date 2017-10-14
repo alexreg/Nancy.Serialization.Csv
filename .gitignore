@@ -1,19 +1,43 @@
-*.[Cc]ache
-*.csproj.user
-*.[Rr]e[Ss]harper*
-*.sln.cache
+# User-specific files (Visual Studio)
 *.suo
 *.user
-*.orig
-*.pidb
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-*.tss
-AssemblyInfo.cs
-.DS_Store
-deploy/
-build/
-[Bb]in/
+
+# Cache files (Visual Studio)
+*.[Cc]ache
+!*.[Cc]ache/
+
+# Cache files (Rider)
+*.*.iml
+.idea/
+
+# Build files
+[Oo]ut/
 [Dd]ebug/
-[Oo]bj/
+[Dd]ebugPublic/
 [Rr]elease/
-_[Rr]e[Ss]harper.*/
+[Rr]eleases/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Cake
+tools/**
+!tools/packages.config
+
+# NuGet Packages
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Testing (NUnit)
+*.VisualState.xml
+TestResult.xml
+
+# Benchmark Results
+BenchmarkDotNet.Artifacts/
