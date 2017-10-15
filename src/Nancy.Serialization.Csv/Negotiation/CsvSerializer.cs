@@ -1,50 +1,41 @@
-﻿using System.Collections;
+﻿using CsvHelper;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace Nancy.Serialization.Csv.Negotiation
 {
 	public class CsvSerializer : ISerializer
 	{
+		public CsvSerializer()
+		{
+		}
+
 		public bool CanSerialize(string contentType)
 		{
-			return contentType == "application/csv";
+			return contentType == MimeTypes.CanonicalMimeType;
 		}
 
 		public void Serialize<TModel>(string contentType, TModel model, Stream outputStream)
 		{
-			IEnumerable subject = model as IEnumerable;
-
-			if (subject != null)
+			var elementType = model.GetType().GetEnumeraleElementTypeFromInterface();
+			if (elementType == null)
 			{
-				bool headerWritten = false;
+				throw new ArgumentException("Model is not an enumerable object.", nameof(model));
+			}
 
-				foreach (var item in subject)
-				{
-					var properties =
-						item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead);
-
-					if (!headerWritten)
-					{
-						string header = properties.Aggregate("", (s, p) => string.Format("{0},{1}", s, p.Name)).Trim(',');
-						byte[] headerBuffer = Encoding.UTF8.GetBytes(header);
-						outputStream.Write(headerBuffer, 0, headerBuffer.Count());
-						headerWritten = true;
-					}
-
-					string row =
-						properties.Aggregate("", (s, p) => string.Format("{0},{1}", s, p.GetValue(item).ToString()))
-								  .Trim(',');
-
-					byte[] buffer = Encoding.UTF8.GetBytes("\n" + row);
-					outputStream.Write(buffer, 0, buffer.Count());
-				}
+			using (var textWriter = new StreamWriter(outputStream))
+			using (var csvWriter = new CsvWriter(textWriter))
+			{
+				csvWriter.WriteHeader(elementType);
+				csvWriter.WriteRecords(model as IEnumerable);
 			}
 		}
 
-		public IEnumerable<string> Extensions { get { yield break; } }
+		public IEnumerable<string> Extensions
+		{
+			get { yield break; }
+		}
 	}
 }
